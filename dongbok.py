@@ -1,6 +1,6 @@
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
 
@@ -36,7 +36,7 @@ def fetch_dongbok_data():
         "storage_rate": None,  # 저수율 (%)
         "storage_amount": None,  # 저수량
         "intake_amount": None,  # 취수량
-        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "updated_at": (datetime.now(timezone.utc) + timedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),  # UTC 시간을 KST로 변환
     }
 
     items = parent_li.select(".cont_body ul li")
