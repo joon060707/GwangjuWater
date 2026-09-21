@@ -10,7 +10,10 @@ const CONFIG = {
   // 동복댐 GitHub raw json 주소 (상수도사업본부 데이터 미러)
   DONGBOK_API_URL: 'https://raw.githubusercontent.com/joon060707/GwangjuWater/refs/heads/main/data.json',
 
-  // 주암댐 국가수자원관리종합정보시스템(WAMIS) 오픈API 주소
+  // 주암댐 저장소 내 정적 JSON 주소 (GitHub Pages HTTPS 호환)
+  JUAM_JSON_PATH: './juam.json',
+
+  // 주암댐 국가수자원관리종합정보시스템(WAMIS) 오픈API 주소 (대체/로컬용)
   JUAM_WAMIS_BASE_URL: 'http://www.wamis.go.kr:8080/wamis/openapi/wkd/mn_hrdata',
   JUAM_DAM_CODE: '4007110',
 
@@ -155,12 +158,30 @@ async function fetchDongbokDam() {
 }
 
 /**
- * [주암댐] WAMIS 실시간 댐 시별 수문자료 오픈API 조회
+ * [주암댐] 데이터 조회
+ * 1. GitHub Pages(HTTPS) 환경에서는 저장소 내의 juam.json을 우선 조회하여 Mixed Content 오류 차단
+ * 2. juam.json 실패 시 WAMIS 직접 호출 시도 (로컬 환경 등)
  */
 async function fetchJuamDam() {
   const statusEl = document.getElementById('juam-status');
-  statusEl.textContent = '주암댐 WAMIS 데이터 조회 중...';
+  statusEl.textContent = '주암댐 데이터 조회 중...';
 
+  // [1단계] GitHub Pages HTTPS 호환용 juam.json 우선 조회
+  try {
+    const cacheBuster = `?_t=${Date.now()}`;
+    const response = await fetch(CONFIG.JUAM_JSON_PATH + cacheBuster);
+
+    if (response.ok) {
+      const juamData = await response.json();
+      renderJuamDam(juamData);
+      statusEl.textContent = '정상 수신 완료';
+      return;
+    }
+  } catch (err) {
+    console.warn('juam.json 조회 실패, WAMIS 직접 호출 시도:', err);
+  }
+
+  // [2단계] 로컬 환경 또는 juam.json 부재 시 WAMIS API 직접 호출
   const startdt = getFormattedDateCompact(-1); // 전날
   const enddt = getFormattedDateCompact(0);    // 오늘
 
