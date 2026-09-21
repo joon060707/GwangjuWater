@@ -46,7 +46,7 @@ async function fetchFromDataGoKr(serviceKey) {
 
   const cleanKey = serviceKey.trim();
   const encodedKey = cleanKey.includes('%') ? cleanKey : encodeURIComponent(cleanKey);
-  const url = `https://apis.data.go.kr/B500001/dam/multipurPoseDam/multipurPoseDamlist?tdate=${tdate}&ldate=${ldate}&vdate=${vdate}&vtime=${vtime}&pageNo=2&numOfRows=10&_type=json&serviceKey=${encodedKey}`;
+  const url = `https://apis.data.go.kr/B500001/dam/multipurPoseDam/multipurPoseDamlist?tdate=${tdate}&ldate=${ldate}&vdate=${vdate}&vtime=${vtime}&pageNo=5&numOfRows=4&_type=json&serviceKey=${encodedKey}`;
 
   console.log(`[공공데이터포털] 다목적댐 목록 API 호출 중 (${vdate} ${vtime}시 KST)...`);
 
