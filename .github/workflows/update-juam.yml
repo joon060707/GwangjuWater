@@ -1,0 +1,39 @@
+name: Update Juam Dam Data
+
+on:
+  schedule:
+    # 1시간마다 정각에 실행 (UTC 기준 매시간 0분)
+    - cron: '0 * * * *'
+  workflow_dispatch: # GitHub 웹 Actions 탭에서 수동 실행 지원
+
+permissions:
+  contents: write # juam.json 변경사항 커밋 및 푸시 권한
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 환경 구성
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 주암댐 WAMIS 데이터 수집 실행
+        run: node fetch_juam.js
+
+      - name: juam.json 변경사항 커밋 및 푸시
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add juam.json
+          if git diff --staged --quiet; then
+            echo "변동된 관측 수치가 없어 커밋을 생략합니다."
+          else
+            git commit -m "chore: 주암댐 실시간 수문 데이터 업데이트 [skip ci]"
+            git push
+            echo "juam.json 업데이트 완료"
+          fi
