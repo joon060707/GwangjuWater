@@ -22,7 +22,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 주암댐 WAMIS 데이터 수집 실행
+      - name: 주암댐 데이터 수집 실행
+        env:
+          JUAM_SERVICE_KEY: ${{ secrets.JUAM_SERVICE_KEY }}
         run: node fetch_juam.js
 
       - name: juam.json 변경사항 커밋 및 푸시
