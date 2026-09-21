@@ -95,7 +95,8 @@ async function fetchFromDataGoKr(serviceKey) {
     damnm: juam.damnm || '주암(본)',
     rsrt: juam.rsvwtrt,             // 저수율 (%)
     rsqty: juam.nowrsvwtqy,         // 현재 저수량 (백만㎥)
-    itqty: juam.totdcwtrqy || '0',  // 방류/유출량
+    tdqty: juam.totdcwtrqy || '0',  // 방류량 (㎥/s, 취수량 포함)
+    itqty: juam.totdcwtrqy || '0',
     rwl: juam.nowlowlevel,          // 현재수위 (m)
     obsdh: `${vdate.replace(/-/g, '')}${vtime}`,
     updated_at: getKSTTimestamp()   // 한국 표준시 (KST)
@@ -132,7 +133,8 @@ async function fetchFromWamis() {
     damnm: '주암(본)',
     rsrt: latest.rsrt,
     rsqty: latest.rsqty,
-    itqty: latest.itqty,
+    tdqty: latest.tdqty || latest.itqty || '0', // 방류량 (㎥/s, 취수량 포함)
+    itqty: latest.itqty || latest.tdqty || '0',
     rwl: latest.rwl,
     obsdh: latest.obsdh,
     updated_at: getKSTTimestamp() // 한국 표준시 (KST)

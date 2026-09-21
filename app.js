@@ -119,14 +119,14 @@ function formatDongbokIntake(str) {
 }
 
 /**
- * 주암댐 취수량(itqty) 포맷팅
- * WAMIS의 itqty는 이미 ㎥/s 단위
+ * 주암댐 방류량(tdqty / totdcwtrqy) 포맷팅
+ * 단위: ㎥/s (방류량 안에 취수량이 포함됨)
  */
-function formatJuamIntake(itqty) {
-  if (itqty === undefined || itqty === null || itqty === '') return '-';
-  const val = parseFloat(itqty);
-  if (isNaN(val)) return '-';
-  return `${val.toFixed(1)} ㎥/s`;
+function formatJuamDischarge(val) {
+  if (val === undefined || val === null || val === '') return '-';
+  const num = parseFloat(val);
+  if (isNaN(num)) return '-';
+  return `${num.toFixed(1)} ㎥/s`;
 }
 
 // ==========================================================================
@@ -286,7 +286,7 @@ function renderJuamDam(item) {
   const rateEl = document.getElementById('juam-rate');
   const gaugeEl = document.getElementById('juam-gauge');
   const amountEl = document.getElementById('juam-amount');
-  const intakeEl = document.getElementById('juam-intake');
+  const dischargeEl = document.getElementById('juam-discharge') || document.getElementById('juam-intake');
   const updatedEl = document.getElementById('juam-updated');
 
   // 저수율 수치 및 게이지 (rsrt)
@@ -303,8 +303,11 @@ function renderJuamDam(item) {
   // 저수량: ㎥ 단위 통일 (백만㎥ * 1,000,000 => 210,373,000 ㎥)
   amountEl.textContent = formatJuamStorage(item.rsqty);
 
-  // 취수량: ㎥/s 단위 통일 (itqty => 5.2 ㎥/s)
-  intakeEl.textContent = formatJuamIntake(item.itqty);
+  // 방류량 (취수량 포함): ㎥/s 단위 통일
+  const dischargeVal = (item.tdqty !== undefined && item.tdqty !== null) ? item.tdqty : item.itqty;
+  if (dischargeEl) {
+    dischargeEl.textContent = formatJuamDischarge(dischargeVal);
+  }
 
   // 최종 업데이트 시간 (시간 단위 포맷)
   updatedEl.textContent = formatToHourUnit(item.obsdh);
