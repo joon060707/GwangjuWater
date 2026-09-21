@@ -4,7 +4,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>광주 권역 주요 댐 (동복댐 주암댐) 저수율 현황</title>
+  <title>광주 권역 주요 댐 (동복댐 · 주암댐 · 상사댐) 실시간 저수율 현황</title>
+  
+  <!-- SEO 메타 태그 -->
+  <meta name="description" content="광주광역시 및 전남 주요 수원지인 동복댐, 주암댐(본댐), 주암조절지댐(상사댐)의 실시간 저수율, 저수량, 취수량, 방류량 현황을 실시간으로 확인하는 웹 대시보드입니다.">
+  <meta name="keywords" content="동복댐, 주암댐, 상사댐, 주암조절지댐, 광주 가뭄, 저수율, 광주 수돗물, 한국수자원공사, 광주상수도사업본부">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph (SNS 및 링크 공유 미리보기: 카카오톡, 슬랙, 페이스북 등) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="광주 권역 주요 댐 실시간 저수율 현황 (동복댐·주암본댐·상사댐)">
+  <meta property="og:description" content="동복댐 및 주암댐 실시간 저수율(%), 저수량(㎥), 취수/방류량 모니터링 대시보드">
+
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -170,6 +181,73 @@
 
         <div class="card-footer">
           <span class="status-text" id="juam-status">데이터를 불러오는 중...</span>
+        </div>
+      </article>
+
+      <!-- 주암조절지댐 (상사댐) 카드 -->
+      <article class="dam-card card-reference" id="card-juam-sub">
+        <div class="card-header">
+          <div class="dam-identity">
+            <h2 class="dam-name">주암조절지댐 <span class="dam-sub-name">(상사댐)</span></h2>
+            <p class="dam-supply-info">주암본댐 연계 조절지 · 순천, 여수, 광양에 물 공급</p>
+          </div>
+          <div class="badge-group">
+            <span class="source-badge badge-reference" title="주암본댐 연계 참고 수원">연계 참고</span>
+            <a href="https://www.water.or.kr/kor/realtime/sumun/index.do?mode=vers&menuId=13_91_93_96" target="_blank"
+              rel="noopener noreferrer" class="source-badge badge-wamis" title="한국수자원공사 물정보포털 바로가기">한국수자원공사</a>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="rate-display">
+            <span class="rate-value" id="juam-sub-rate">--</span>
+            <span class="rate-unit">%</span>
+          </div>
+
+          <div class="gauge-container">
+            <div class="gauge-track">
+              <div class="gauge-fill gauge-juam" id="juam-sub-gauge" style="width: 0%;"></div>
+            </div>
+            <div class="gauge-labels">
+              <span>0%</span>
+              <span>50%</span>
+              <span>100%</span>
+            </div>
+          </div>
+
+          <!-- 원본 사이트 바로가기 버튼 및 설명 -->
+          <div class="source-link-box">
+            <a href="https://www.water.or.kr/kor/realtime/sumun/index.do?mode=vers&menuId=13_91_93_96" target="_blank"
+              rel="noopener noreferrer" class="btn-source-link">
+              <span>상사댐 원본 사이트 바로가기</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+            <p class="source-link-tip">[접속 후 아래 영역에서 스크롤바를 오른쪽으로 움직여 "저수율"을 확인하세요!]</p>
+          </div>
+
+          <div class="data-meta-list">
+            <div class="meta-row">
+              <span class="meta-label">저수량</span>
+              <span class="meta-val" id="juam-sub-amount">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">방류량</span>
+              <span class="meta-val" id="juam-sub-discharge">-</span>
+            </div>
+            <div class="meta-row update-time-row">
+              <span class="meta-label">최종 업데이트</span>
+              <span class="meta-val" id="juam-sub-updated">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="status-text" id="juam-sub-status">데이터를 불러오는 중...</span>
         </div>
       </article>
     </main>

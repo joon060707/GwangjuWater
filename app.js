@@ -13,6 +13,9 @@ const CONFIG = {
   // 주암댐 저장소 내 정적 JSON 주소 (GitHub Pages HTTPS 호환)
   JUAM_JSON_PATH: './data2.json',
 
+  // 주암조절지댐(상사댐) 저장소 내 정적 JSON 주소
+  JUAM_SUB_JSON_PATH: './data3.json',
+
   // 주암댐 국가수자원관리종합정보시스템(WAMIS) 오픈API 주소 (대체/로컬용)
   JUAM_WAMIS_BASE_URL: 'http://www.wamis.go.kr:8080/wamis/openapi/wkd/mn_hrdata',
   JUAM_DAM_CODE: '4007110',
@@ -212,6 +215,36 @@ async function fetchJuamDam() {
 }
 
 /**
+ * [주암조절지댐 (상사댐)] 데이터 조회
+ * 주암본댐과 도수터널로 연계된 조절지댐으로 data3.json을 조회합니다.
+ * 연계 참고 수원지이므로 데이터가 없거나 로드 실패 시 상태를 안내합니다.
+ */
+async function fetchJuamSubDam() {
+  const cardEl = document.getElementById('card-juam-sub');
+  const statusEl = document.getElementById('juam-sub-status');
+  if (!statusEl) return;
+
+  statusEl.textContent = '조절지댐 데이터 조회 중...';
+
+  try {
+    const cacheBuster = `?_t=${Date.now()}`;
+    const response = await fetch(CONFIG.JUAM_SUB_JSON_PATH + cacheBuster);
+
+    if (response.ok) {
+      const data = await response.json();
+      renderJuamSubDam(data);
+      statusEl.textContent = '정상 수신 완료';
+      if (cardEl) cardEl.style.display = '';
+    } else {
+      throw new Error(`HTTP ${response.status}`);
+    }
+  } catch (error) {
+    console.warn('주암조절지댐 data3.json 조회 실패:', error);
+    statusEl.textContent = `데이터 수신 대기 중 (${error.message})`;
+  }
+}
+
+/**
  * 저수율 수치별 색상 테마 적용
  * - 20% 미만: 빨간색 (.rate-level-danger, .gauge-level-danger)
  * - 30% 미만: 주황색 (.rate-level-warning, .gauge-level-warning)
@@ -314,6 +347,41 @@ function renderJuamDam(item) {
 }
 
 /**
+ * 주암조절지댐 (상사댐) 데이터 화면 출력
+ */
+function renderJuamSubDam(item) {
+  const rateVal = parseFloat(item.rsrt);
+  const rateEl = document.getElementById('juam-sub-rate');
+  const gaugeEl = document.getElementById('juam-sub-gauge');
+  const amountEl = document.getElementById('juam-sub-amount');
+  const dischargeEl = document.getElementById('juam-sub-discharge');
+  const updatedEl = document.getElementById('juam-sub-updated');
+
+  // 저수율 수치 및 게이지 (rsrt)
+  if (!isNaN(rateVal)) {
+    rateEl.textContent = rateVal.toFixed(1);
+    gaugeEl.style.width = `${Math.min(Math.max(rateVal, 0), 100)}%`;
+  } else {
+    rateEl.textContent = item.rsrt || '--';
+  }
+
+  // 저수율 기준별 상태 색상 적용 (40% 미만: 노랑, 30% 미만: 주황, 20% 미만: 빨강)
+  applyRateColorTheme(rateVal, rateEl, gaugeEl);
+
+  // 저수량: ㎥ 단위 통일 (백만㎥ * 1,000,000 => 140,100,000 ㎥)
+  amountEl.textContent = formatJuamStorage(item.rsqty);
+
+  // 방류량 (취수량 포함): ㎥/s 단위 통일
+  const dischargeVal = (item.tdqty !== undefined && item.tdqty !== null) ? item.tdqty : item.itqty;
+  if (dischargeEl) {
+    dischargeEl.textContent = formatJuamDischarge(dischargeVal);
+  }
+
+  // 최종 업데이트 시간 (시간 단위 포맷)
+  updatedEl.textContent = formatToHourUnit(item.obsdh);
+}
+
+/**
  * 전체 대시보드 새로고침
  */
 async function refreshDashboard() {
@@ -323,8 +391,8 @@ async function refreshDashboard() {
 
   refreshTimeEl.textContent = `${timeString} 갱신`;
 
-  // 두 API 병렬 호출
-  await Promise.allSettled([fetchDongbokDam(), fetchJuamDam()]);
+  // 3개 댐(동복댐, 주암본댐, 주암조절지댐) 병렬 호출
+  await Promise.allSettled([fetchDongbokDam(), fetchJuamDam(), fetchJuamSubDam()]);
 }
 
 // ==========================================================================

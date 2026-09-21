@@ -36,7 +36,7 @@
   /* 위험/오류 (빨강) */
 
   /* [레이아웃 및 모서리] */
-  --max-width: 960px;
+  --max-width: 1060px;
   --card-radius: 16px;
   /* 카드 모서리 둥글기 */
   --transition-speed: 0.25s;
@@ -187,7 +187,7 @@ body {
    -------------------------------------------------------------------------- */
 .dam-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
 }
@@ -268,6 +268,32 @@ body {
   border-color: var(--juam-color);
 }
 
+.badge-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.badge-reference {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+html[data-theme="dark"] .badge-reference {
+  background-color: #334155;
+  color: #cbd5e1;
+  border-color: #475569;
+}
+
+.dam-sub-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 /* 카드 본문: 저수율 수치 강조 */
 .card-body {
   margin-bottom: 20px;
@@ -289,7 +315,8 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-#card-juam .rate-value {
+#card-juam .rate-value,
+#card-juam-sub .rate-value {
   color: var(--juam-color);
 }
 
@@ -401,13 +428,15 @@ html[data-theme="dark"] .rate-value.rate-level-caution {
   transform: translateY(-1px);
 }
 
-#card-juam .btn-source-link {
+#card-juam .btn-source-link,
+#card-juam-sub .btn-source-link {
   background-color: rgba(15, 118, 110, 0.1);
   color: var(--juam-color);
   border-color: rgba(15, 118, 110, 0.25);
 }
 
-#card-juam .btn-source-link:hover {
+#card-juam .btn-source-link:hover,
+#card-juam-sub .btn-source-link:hover {
   background-color: rgba(15, 118, 110, 0.18);
   border-color: var(--juam-color);
 }
