@@ -1,0 +1,507 @@
+/* ==========================================================================
+   댐 저수율 대시보드 - Plain CSS 스타일시트
+   외부 라이브러리 없이 작성되었으며, 아래 CSS 변수(:root)를 직접 변경하여 
+   색상, 폰트, 여백 등을 손쉽게 커스터마이징할 수 있습니다.
+   ========================================================================== */
+
+:root {
+  /* [색상 팔레트 설정] */
+  --bg-color: #f4f7fb;
+  /* 전체 배경색 */
+  --card-bg: #ffffff;
+  /* 카드 배경색 */
+  --text-main: #192038;
+  /* 주요 텍스트 색상 */
+  --text-muted: #64748b;
+  /* 보조/설명 텍스트 색상 */
+  --border-color: #e2e8f0;
+  /* 테두리 색상 */
+
+  /* [테마 및 포인트 컬러] */
+  --primary-blue: #0284c7;
+  /* 동복댐 포인트 컬러 (청록/블루) */
+  --primary-deep: #0369a1;
+  /* 짙은 블루 */
+  --juam-color: #0f766e;
+  /* 주암댐 포인트 컬러 (에메랄드/청록) */
+  --accent-light: #e0f2fe;
+  /* 연한 블루 배경 */
+
+  /* [상태 컬러] */
+  --status-normal: #10b981;
+  /* 정상 상태 (초록) */
+  --status-caution: #f59e0b;
+  /* 대기/주의 상태 (주황) */
+  --status-danger: #ef4444;
+  /* 위험/오류 (빨강) */
+
+  /* [레이아웃 및 모서리] */
+  --max-width: 960px;
+  --card-radius: 16px;
+  /* 카드 모서리 둥글기 */
+  --transition-speed: 0.25s;
+
+  /* [폰트] 시스템 기본 서체 스택 (외부 웹폰트 요청 없음) */
+  --font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+/* 다크 모드 (버튼 토글 지원: html[data-theme="dark"]) */
+html[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --accent-light: #1e3a5f;
+}
+
+/* 기본 리셋 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   1. 헤더 (Header)
+   -------------------------------------------------------------------------- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-titles .main-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.header-titles .sub-title {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background-color: var(--card-bg);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--status-normal);
+  display: inline-block;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. 버튼 스타일 (Buttons)
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-speed) ease;
+  background: transparent;
+  color: var(--text-main);
+}
+
+.btn .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-secondary {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--border-color);
+}
+
+/* --------------------------------------------------------------------------
+   3. 댐 카드 그리드 (Dam Cards Grid)
+   -------------------------------------------------------------------------- */
+.dam-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.dam-card {
+  background-color: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--border-color);
+  padding: 28px 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.dam-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* 카드 헤더 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.dam-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.dam-supply-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+/* 출처 뱃지 링크 */
+.source-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all var(--transition-speed) ease;
+}
+
+.badge-source {
+  background-color: var(--accent-light);
+  color: var(--primary-deep);
+  border-color: rgba(2, 132, 199, 0.2);
+}
+
+.badge-source:hover {
+  background-color: #bae6fd;
+  border-color: var(--primary-blue);
+}
+
+.badge-wamis {
+  background-color: rgba(15, 118, 110, 0.12);
+  color: var(--juam-color);
+  border-color: rgba(15, 118, 110, 0.25);
+}
+
+.badge-wamis:hover {
+  background-color: rgba(15, 118, 110, 0.2);
+  border-color: var(--juam-color);
+}
+
+/* 카드 본문: 저수율 수치 강조 */
+.card-body {
+  margin-bottom: 20px;
+}
+
+.rate-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
+
+.rate-value {
+  font-size: 3.8rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--primary-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+#card-juam .rate-value {
+  color: var(--juam-color);
+}
+
+.rate-unit {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+/* 수위 게이지 바 (Progress Bar) */
+.gauge-container {
+  margin-bottom: 24px;
+}
+
+.gauge-track {
+  width: 100%;
+  height: 12px;
+  background-color: var(--border-color);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, var(--primary-blue));
+  border-radius: 999px;
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gauge-juam {
+  background: linear-gradient(90deg, #2dd4bf, var(--juam-color));
+}
+
+/* ==========================================================================
+   저수율 기준별 상태 색상 (40% 미만: 노랑 / 30% 미만: 주황 / 20% 미만: 빨강)
+   ========================================================================== */
+/* 40% 미만: 노란색 (가독성을 위한 선명한 골드 옐로우) */
+.rate-value.rate-level-caution {
+  color: #ca8a04 !important;
+}
+.gauge-fill.gauge-level-caution {
+  background: linear-gradient(90deg, #fde047, #eab308) !important;
+}
+
+/* 30% 미만: 주황색 */
+.rate-value.rate-level-warning {
+  color: #ea580c !important;
+}
+.gauge-fill.gauge-level-warning {
+  background: linear-gradient(90deg, #fdba74, #f97316) !important;
+}
+
+/* 20% 미만: 빨간색 */
+.rate-value.rate-level-danger {
+  color: #dc2626 !important;
+}
+.gauge-fill.gauge-level-danger {
+  background: linear-gradient(90deg, #f87171, #ef4444) !important;
+}
+
+/* 다크모드 시 노란색 텍스트 시인성 보정 */
+html[data-theme="dark"] .rate-value.rate-level-caution {
+  color: #facc15 !important;
+}
+
+.gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* 원본 사이트 바로가기 박스 및 버튼 */
+.source-link-box {
+  margin-top: 18px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.btn-source-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  background-color: var(--accent-light);
+  color: var(--primary-deep);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  transition: all var(--transition-speed) ease;
+}
+
+.btn-source-link .icon {
+  width: 15px;
+  height: 15px;
+}
+
+.btn-source-link:hover {
+  background-color: #bae6fd;
+  border-color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+#card-juam .btn-source-link {
+  background-color: rgba(15, 118, 110, 0.1);
+  color: var(--juam-color);
+  border-color: rgba(15, 118, 110, 0.25);
+}
+
+#card-juam .btn-source-link:hover {
+  background-color: rgba(15, 118, 110, 0.18);
+  border-color: var(--juam-color);
+}
+
+.source-link-tip {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  text-align: center;
+  word-break: keep-all;
+}
+
+/* 메타 정보 리스트 (저수량 / 취수량 / 최종 업데이트) */
+.data-meta-list {
+  background-color: var(--bg-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.meta-label {
+  color: var(--text-muted);
+}
+
+.meta-val {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.update-time-row {
+  border-top: 1px dashed var(--border-color);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+/* 카드 하단 상태 텍스트 */
+.card-footer {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* --------------------------------------------------------------------------
+   4. 바닥글 (Footer)
+   -------------------------------------------------------------------------- */
+.dashboard-footer {
+  text-align: center;
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  padding: 16px 0;
+  line-height: 1.6;
+}
+
+.dashboard-footer a {
+  color: var(--text-main);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--transition-speed);
+}
+
+.dashboard-footer a:hover {
+  color: var(--primary-blue);
+}
+
+/* 반응형 화면 처리 */
+@media (max-width: 640px) {
+  body {
+    padding: 24px 16px;
+  }
+
+  .header-titles .main-title {
+    font-size: 1.5rem;
+  }
+
+  .rate-value {
+    font-size: 3rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: flex-end;
+  }
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>광주 권역 주요 댐 (동복댐 주암댐) 저수율 현황</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <!-- 헤더 영역 -->
+    <header class="dashboard-header">
+      <div class="header-titles">
+        <h1 class="main-title">광주 권역 주요 댐 저수율 현황</h1>
+        <p class="sub-title">광주·전남 주요 수원지(동복댐 · 주암댐) 실시간 수위 모니터링</p>
+      </div>
+      <div class="header-actions">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span id="last-refresh-time">조회 준비 중...</span>
+        </div>
+        <button id="btn-theme-toggle" class="btn btn-secondary" title="화면 모드 전환" aria-label="화면 모드 전환">
+          <svg id="theme-icon-moon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg id="theme-icon-sun" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span id="theme-text">다크 모드</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 대시보드 카드 영역 -->
+    <main class="dam-grid">
+      <!-- 동복댐 카드 -->
+      <article class="dam-card" id="card-dongbok">
+        <div class="card-header">
+          <div class="dam-identity">
+            <h2 class="dam-name">동복댐</h2>
+            <p class="dam-supply-info">광주 동구, 북구, 광산구 일부에 물을 공급</p>
+          </div>
+          <a href="https://water.jeonnam-gwangju.go.kr/mainPortal.do" target="_blank" rel="noopener noreferrer"
+            class="source-badge badge-source" title="전남광주통합특별시상수도사업본부 바로가기">상수도사업본부</a>
+        </div>
+
+        <div class="card-body">
+          <div class="rate-display">
+            <span class="rate-value" id="dongbok-rate">--</span>
+            <span class="rate-unit">%</span>
+          </div>
+
+          <div class="gauge-container">
+            <div class="gauge-track">
+              <div class="gauge-fill" id="dongbok-gauge" style="width: 0%;"></div>
+            </div>
+            <div class="gauge-labels">
+              <span>0%</span>
+              <span>50%</span>
+              <span>100%</span>
+            </div>
+          </div>
+
+          <!-- 원본 사이트 바로가기 버튼 및 설명 -->
+          <div class="source-link-box">
+            <a href="https://water.jeonnam-gwangju.go.kr/mainPortal.do" target="_blank" rel="noopener noreferrer"
+              class="btn-source-link">
+              <span>동복댐 원본 사이트 바로가기</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+            <p class="source-link-tip">[접속 후 아래 "오늘의 상수도 현황"을 참고하세요!]</p>
+          </div>
+
+          <div class="data-meta-list">
+            <div class="meta-row">
+              <span class="meta-label">저수량</span>
+              <span class="meta-val" id="dongbok-amount">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">취수량</span>
+              <span class="meta-val" id="dongbok-intake">-</span>
+            </div>
+            <div class="meta-row update-time-row">
+              <span class="meta-label">최종 업데이트</span>
+              <span class="meta-val" id="dongbok-updated">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="status-text" id="dongbok-status">데이터를 불러오는 중...</span>
+        </div>
+      </article>
+
+      <!-- 주암댐 카드 -->
+      <article class="dam-card" id="card-juam">
+        <div class="card-header">
+          <div class="dam-identity">
+            <h2 class="dam-name">주암댐 (본댐)</h2>
+            <p class="dam-supply-info">광주 서구, 남구, 광산구에 물을 공급</p>
+          </div>
+          <a href="http://www.wamis.go.kr" target="_blank" rel="noopener noreferrer" class="source-badge badge-wamis"
+            title="국가수자원관리종합정보시스템 WAMIS 바로가기">WAMIS</a>
+        </div>
+
+        <div class="card-body">
+          <div class="rate-display">
+            <span class="rate-value" id="juam-rate">--</span>
+            <span class="rate-unit">%</span>
+          </div>
+
+          <div class="gauge-container">
+            <div class="gauge-track">
+              <div class="gauge-fill gauge-juam" id="juam-gauge" style="width: 0%;"></div>
+            </div>
+            <div class="gauge-labels">
+              <span>0%</span>
+              <span>50%</span>
+              <span>100%</span>
+            </div>
+          </div>
+
+          <!-- 원본 사이트 바로가기 버튼 및 설명 -->
+          <div class="source-link-box">
+            <a href="https://www.water.or.kr/kor/realtime/sumun/index.do?mode=vers&menuId=13_91_93_96" target="_blank"
+              rel="noopener noreferrer" class="btn-source-link">
+              <span>주암댐 원본 사이트 바로가기</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+            <p class="source-link-tip">[접속 후 아래 영역에서 스크롤바를 오른쪽으로 움직여 "저수율"을 확인하세요!]</p>
+          </div>
+
+          <div class="data-meta-list">
+            <div class="meta-row">
+              <span class="meta-label">저수량</span>
+              <span class="meta-val" id="juam-amount">-</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">취수량</span>
+              <span class="meta-val" id="juam-intake">-</span>
+            </div>
+            <div class="meta-row update-time-row">
+              <span class="meta-label">최종 업데이트</span>
+              <span class="meta-val" id="juam-updated">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="status-text" id="juam-status">데이터를 불러오는 중...</span>
+        </div>
+      </article>
+    </main>
+
+    <!-- 바닥글 -->
+    <footer class="dashboard-footer">
+      <p>본 사이트는 <a href="https://water.jeonnam-gwangju.go.kr/mainPortal.do" target="_blank"
+          rel="noopener noreferrer">전남광주통합특별시상수도사업본부</a> 및 <a href="http://www.wamis.go.kr" target="_blank"
+          rel="noopener noreferrer">국가수자원관리종합정보시스템(WAMIS)</a> 실시간 공개 데이터를 기반으로 제공됩니다.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
