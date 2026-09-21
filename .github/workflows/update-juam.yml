@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # GitHub 웹 Actions 탭에서 수동 실행 지원
 
 permissions:
-  contents: write # juam.json 변경사항 커밋 및 푸시 권한
+  contents: write # data2.json 변경사항 커밋 및 푸시 권한
 
 jobs:
   fetch-and-commit:
@@ -25,17 +25,17 @@ jobs:
       - name: 주암댐 데이터 수집 실행
         env:
           JUAM_SERVICE_KEY: ${{ secrets.JUAM_SERVICE_KEY }}
-        run: node fetch_juam.js
+        run: node juam.js
 
-      - name: juam.json 변경사항 커밋 및 푸시
+      - name: data2.json 변경사항 커밋 및 푸시
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add juam.json
+          git add data2.json
           if git diff --staged --quiet; then
             echo "변동된 관측 수치가 없어 커밋을 생략합니다."
           else
             git commit -m "chore: 주암댐 실시간 수문 데이터 업데이트 [skip ci]"
             git push
-            echo "juam.json 업데이트 완료"
+            echo "data2.json 업데이트 완료"
           fi
