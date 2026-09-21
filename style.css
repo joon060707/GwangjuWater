@@ -36,7 +36,7 @@
   /* 위험/오류 (빨강) */
 
   /* [레이아웃 및 모서리] */
-  --max-width: 1060px;
+  --max-width: 1600px;
   --card-radius: 16px;
   /* 카드 모서리 둥글기 */
   --transition-speed: 0.25s;
@@ -358,6 +358,7 @@ html[data-theme="dark"] .badge-reference {
 .rate-value.rate-level-caution {
   color: #ca8a04 !important;
 }
+
 .gauge-fill.gauge-level-caution {
   background: linear-gradient(90deg, #fde047, #eab308) !important;
 }
@@ -366,6 +367,7 @@ html[data-theme="dark"] .badge-reference {
 .rate-value.rate-level-warning {
   color: #ea580c !important;
 }
+
 .gauge-fill.gauge-level-warning {
   background: linear-gradient(90deg, #fdba74, #f97316) !important;
 }
@@ -374,6 +376,7 @@ html[data-theme="dark"] .badge-reference {
 .rate-value.rate-level-danger {
   color: #dc2626 !important;
 }
+
 .gauge-fill.gauge-level-danger {
   background: linear-gradient(90deg, #f87171, #ef4444) !important;
 }
