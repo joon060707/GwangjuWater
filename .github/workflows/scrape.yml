@@ -3,7 +3,7 @@ name: Scrape water rate
 on:
   schedule:
     # 3시간마다 실행 (UTC 기준: 0, 3, 6, 9, 12, 15, 18, 21시)
-    - cron: '0 */3 * * *'
+    - cron: '0 * * * *'
   workflow_dispatch: # Actions 탭에서 수동 실행 버튼 활성화
 
 permissions:
