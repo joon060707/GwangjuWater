@@ -28,7 +28,7 @@ jobs:
 
       - name: 크롤링 실행
         run: |
-          python crawler.py
+          python dongbok.py
 
       - name: 변경사항 커밋 및 푸시
         run: |
