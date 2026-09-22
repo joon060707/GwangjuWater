@@ -51,7 +51,7 @@ function getFormattedDateCompact(dayOffset = 0) {
  */
 function formatToHourUnit(timestampStr) {
   if (!timestampStr) return '-';
-  
+
   // WAMIS obsdh (YYYYMMDDHH 10자리)
   if (/^\d{10}$/.test(timestampStr)) {
     const y = timestampStr.substring(0, 4);
@@ -107,7 +107,7 @@ function formatJuamStorage(rsqty) {
 }
 
 /**
- * 동복댐 취수량 문자열(예: '12,144천㎥/시간')을 초당 유량(㎥/s)으로 변환
+ * 동복댐 취수량 문자열(예: '12,144㎥/시간')을 초당 유량(㎥/s)으로 변환 (여기서 '천'은 오타)
  * 1시간 = 3,600초로 나누어 ㎥/s로 환산
  */
 function formatDongbokIntake(str) {
