@@ -32,10 +32,6 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data2.json data3.json
-          if git diff --staged --quiet; then
-            echo "변동된 관측 수치가 없어 커밋을 생략합니다."
-          else
-            git commit -m "chore: 주암댐(본댐·상사댐) 실시간 수문 데이터 업데이트 [skip ci]"
-            git push
-            echo "data2.json 및 data3.json 업데이트 완료"
-          fi
+          git commit -m "chore: 주암댐(본댐·상사댐) 실시간 수문 데이터 업데이트 [skip ci]"
+          git push
+          echo "data2.json 및 data3.json 업데이트 완료"
