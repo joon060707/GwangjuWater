@@ -65,6 +65,7 @@ async function fetchFromDataGoKr(serviceKey) {
   }
 
   const items = json?.response?.body?.items?.item;
+  console.log(items);
   const list = Array.isArray(items) ? items : (items ? [items] : []);
 
   if (list.length === 0) {
