@@ -1,7 +1,7 @@
 {
   "reservoir": "동복수원지",
-  "storage_rate": 50.83,
-  "storage_amount": "45,288천㎥",
-  "intake_amount": "12,259㎥/시간",
-  "updated_at": "2026-10-13 11:52:34"
+  "storage_rate": 50.68,
+  "storage_amount": "45백만㎥",
+  "intake_amount": "12천㎥/h",
+  "updated_at": "2026-10-13 19:13:34"
 }
