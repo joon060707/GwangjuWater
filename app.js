@@ -107,15 +107,26 @@ function formatJuamStorage(rsqty) {
 }
 
 /**
- * 동복댐 취수량 문자열(예: '12,144㎥/시간')을 초당 유량(㎥/s)으로 변환 (여기서 '천'은 오타)
- * 1시간 = 3,600초로 나누어 ㎥/s로 환산
+ * 동복댐 취수량 문자열(예: '12천㎥/h', '12천㎥/시간')을 초당 유량(㎥/s)으로 변환
+ * 취수량 단위(천㎥/시간)에 1,000을 곱한 뒤 1시간 = 3,600초로 나누어 ㎥/s로 환산
  */
 function formatDongbokIntake(str) {
   if (!str) return '-';
   const numMatch = String(str).replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
   if (!numMatch) return str;
 
-  const rawVal = parseFloat(numMatch[1]);
+  let rawVal = parseFloat(numMatch[1]);
+  if (isNaN(rawVal)) return '-';
+
+  // 사이트 오류 수정 반영: 기존에는 수치 자체가 12,144였으나 현재는 12천㎥ 단위로 정상 표기되므로 1,000을 곱함
+  if (String(str).includes('천')) {
+    rawVal *= 1000;
+  } else if (String(str).includes('백만')) {
+    rawVal *= 1000000;
+  } else {
+    rawVal *= 1000;
+  }
+
   // 시간당 수치이므로 3,600으로 나누어 초당(㎥/s)으로 변환
   const perSec = rawVal / 3600;
   return `${perSec.toFixed(1)} ㎥/s`;
@@ -304,7 +315,7 @@ function renderDongbokDam(data) {
   // 저수량: ㎥ 단위 통일 (50,229,000 ㎥)
   amountEl.textContent = formatDongbokStorage(data.storage_amount);
 
-  // 취수량: ㎥/s 단위 통일 (시간당 / 3600 => 3.4 ㎥/s)
+  // 취수량: ㎥/s 단위 통일 (시간당 천㎥ * 1000 / 3600 => 약 3.3 ㎥/s)
   intakeEl.textContent = formatDongbokIntake(data.intake_amount);
 
   // 최종 업데이트 시간 (시간 단위 포맷)
