@@ -183,6 +183,125 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   가뭄 주의 / 절수 권고 배너 (Water Saving Banner)
+   -------------------------------------------------------------------------- */
+.water-saving-banner {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(249, 115, 22, 0.12) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--card-radius);
+  padding: 16px 22px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: bannerFadeIn 0.4s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.water-saving-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #ef4444, #f97316);
+}
+
+.banner-icon-box {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.banner-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.banner-content {
+  flex: 1;
+}
+
+.banner-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.banner-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #dc2626;
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+.banner-desc {
+  font-size: 0.875rem;
+  color: var(--text-main);
+  margin-top: 4px;
+  margin-bottom: 0;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 다크모드 대응 */
+html[data-theme="dark"] .water-saving-banner {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(249, 115, 22, 0.2) 100%);
+  border-color: rgba(239, 68, 68, 0.45);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] .banner-title {
+  color: #f87171;
+}
+
+html[data-theme="dark"] .banner-badge {
+  background-color: rgba(248, 113, 113, 0.2);
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+html[data-theme="dark"] .banner-desc {
+  color: #f1f5f9;
+}
+
+/* --------------------------------------------------------------------------
    3. 댐 카드 그리드 (Dam Cards Grid)
    -------------------------------------------------------------------------- */
 .dam-grid {
@@ -598,5 +717,30 @@ html[data-theme="dark"] #card-juam-sub .usable-days-row .highlight-days {
 
   .header-actions {
     justify-content: flex-end;
+  }
+
+  .water-saving-banner {
+    padding: 14px 16px;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .banner-icon-box {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+  }
+
+  .banner-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .banner-title {
+    font-size: 1.05rem;
+  }
+
+  .banner-desc {
+    font-size: 0.825rem;
   }
 }

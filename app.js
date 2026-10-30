@@ -186,29 +186,85 @@ function formatJuamDischarge(val) {
  * (1일 물 사용량 = 초당 유량 × 86,400초, 사용 가능 일수 = 총 저수량 ÷ 1일 물 사용량)
  * @param {number|null} storageM3 - 총 저수량 (㎥)
  * @param {number|null} flowM3PerSec - 초당 유량 또는 방류/취수량 (㎥/s)
- * @returns {{ text: string, tooltip: string }}
+ * @returns {{ text: string, tooltip: string, days: number|null }}
  */
 function calculateUsableDays(storageM3, flowM3PerSec) {
   if (!storageM3 || !flowM3PerSec || storageM3 <= 0 || flowM3PerSec <= 0) {
-    return { text: '-', tooltip: '저수량 또는 취수량(방류량) 데이터가 없어 산출할 수 없습니다.' };
+    return { text: '-', tooltip: '저수량 또는 취수량(방류량) 데이터가 없어 산출할 수 없습니다.', days: null };
   }
 
   // 1일 = 86,400초 (24시간 × 3,600초)
   const dailyUsageM3 = flowM3PerSec * 86400;
   if (dailyUsageM3 <= 0) {
-    return { text: '-', tooltip: '취수량(방류량)이 0㎥/s로 산출할 수 없습니다.' };
+    return { text: '-', tooltip: '취수량(방류량)이 0㎥/s로 산출할 수 없습니다.', days: null };
   }
 
   const days = storageM3 / dailyUsageM3;
   if (!isFinite(days) || days < 0) {
-    return { text: '-', tooltip: '산출할 수 없습니다.' };
+    return { text: '-', tooltip: '산출할 수 없습니다.', days: null };
   }
 
   const roundedDays = Math.round(days);
   const text = roundedDays < 1 ? '1일 미만' : `${roundedDays.toLocaleString('ko-KR')}일`;
   const tooltip = `현재 저수량(${storageM3.toLocaleString('ko-KR')} ㎥) ÷ 1일 사용량(${Math.round(dailyUsageM3).toLocaleString('ko-KR')} ㎥/일) = 약 ${days.toFixed(1)}일`;
 
-  return { text, tooltip };
+  return { text, tooltip, days };
+}
+
+// 3개 댐의 물 사용 가능 일수 추적 (어느 하나라도 90일 미만이면 '물을 아껴씁시다' 배너 표시)
+const damUsableDaysState = {
+  dongbok: null,
+  juam: null,
+  juamSub: null
+};
+
+/**
+ * 3개 댐 중 하나라도 물 사용 가능 일수가 90일 아래로 떨어지는 경우 '물을 아껴씁시다' 배너 표시
+ */
+function updateWaterSavingBanner() {
+  const bannerEl = document.getElementById('water-saving-banner');
+  const badgeEl = document.getElementById('banner-warning-badge');
+  const descEl = document.getElementById('banner-desc');
+  if (!bannerEl) return;
+
+  const dams = [];
+  if (damUsableDaysState.dongbok !== null && !isNaN(damUsableDaysState.dongbok)) {
+    dams.push({ name: '동복댐', days: damUsableDaysState.dongbok });
+  }
+  if (damUsableDaysState.juam !== null && !isNaN(damUsableDaysState.juam)) {
+    dams.push({ name: '주암댐(본댐)', days: damUsableDaysState.juam });
+  }
+  if (damUsableDaysState.juamSub !== null && !isNaN(damUsableDaysState.juamSub)) {
+    dams.push({ name: '상사댐', days: damUsableDaysState.juamSub });
+  }
+
+  // 90일 미만인 댐 확인
+  const criticalDams = dams.filter(d => d.days < 90);
+
+  if (criticalDams.length > 0) {
+    bannerEl.style.display = 'flex';
+    if (descEl) {
+      const damListText = criticalDams
+        .map(d => `${d.name} (${Math.round(d.days)}일)`)
+        .join(', ');
+      descEl.textContent = `현재 ${damListText}의 예상 물 사용 가능 일수가 90일 미만으로 가뭄에 대비한 절수가 절실합니다. 일상 속 절수에 적극 동참해 주세요.`;
+    }
+    if (badgeEl) {
+      badgeEl.textContent = `가뭄 경고 (${criticalDams.length}개 수원지 90일 미만)`;
+    }
+  } else {
+    bannerEl.style.display = 'none';
+  }
+}
+
+// 개발 및 테스트용 헬퍼 함수 (브라우저 콘솔에서 setDamUsableDays(85) 등으로 가뭄 배너 즉시 테스트 가능)
+if (typeof window !== 'undefined') {
+  window.setDamUsableDays = function(dongbok, juam, juamSub) {
+    if (dongbok !== undefined) damUsableDaysState.dongbok = dongbok;
+    if (juam !== undefined) damUsableDaysState.juam = juam;
+    if (juamSub !== undefined) damUsableDaysState.juamSub = juamSub;
+    updateWaterSavingBanner();
+  };
 }
 
 // ==========================================================================
@@ -390,11 +446,13 @@ function renderDongbokDam(data) {
 
   // 현 수준으로 물 사용 가능한 일수 (저수량 ÷ 1일 취수량)
   const usableDaysEl = document.getElementById('dongbok-usable-days');
+  const dongbokDaysResult = calculateUsableDays(storageM3, intakePerSec);
   if (usableDaysEl) {
-    const { text, tooltip } = calculateUsableDays(storageM3, intakePerSec);
-    usableDaysEl.textContent = text;
-    usableDaysEl.title = tooltip;
+    usableDaysEl.textContent = dongbokDaysResult.text;
+    usableDaysEl.title = dongbokDaysResult.tooltip;
   }
+  damUsableDaysState.dongbok = dongbokDaysResult.days;
+  updateWaterSavingBanner();
 
   // 최종 업데이트 시간 (시간 단위 포맷)
   updatedEl.textContent = formatToHourUnit(data.updated_at);
@@ -435,11 +493,13 @@ function renderJuamDam(item) {
 
   // 현 수준으로 물 사용 가능한 일수 (저수량 ÷ 1일 방류량)
   const usableDaysEl = document.getElementById('juam-usable-days');
+  const juamDaysResult = calculateUsableDays(storageM3, dischargePerSec);
   if (usableDaysEl) {
-    const { text, tooltip } = calculateUsableDays(storageM3, dischargePerSec);
-    usableDaysEl.textContent = text;
-    usableDaysEl.title = tooltip;
+    usableDaysEl.textContent = juamDaysResult.text;
+    usableDaysEl.title = juamDaysResult.tooltip;
   }
+  damUsableDaysState.juam = juamDaysResult.days;
+  updateWaterSavingBanner();
 
   // 최종 업데이트 시간 (시간 단위 포맷)
   updatedEl.textContent = formatToHourUnit(item.obsdh);
@@ -480,11 +540,13 @@ function renderJuamSubDam(item) {
 
   // 현 수준으로 물 사용 가능한 일수 (저수량 ÷ 1일 방류량)
   const usableDaysEl = document.getElementById('juam-sub-usable-days');
+  const juamSubDaysResult = calculateUsableDays(storageM3, dischargePerSec);
   if (usableDaysEl) {
-    const { text, tooltip } = calculateUsableDays(storageM3, dischargePerSec);
-    usableDaysEl.textContent = text;
-    usableDaysEl.title = tooltip;
+    usableDaysEl.textContent = juamSubDaysResult.text;
+    usableDaysEl.title = juamSubDaysResult.tooltip;
   }
+  damUsableDaysState.juamSub = juamSubDaysResult.days;
+  updateWaterSavingBanner();
 
   // 최종 업데이트 시간 (시간 단위 포맷)
   updatedEl.textContent = formatToHourUnit(item.obsdh);

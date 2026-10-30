@@ -17,7 +17,7 @@
   <meta property="og:title" content="광주 권역 주요 댐 실시간 저수율 현황 (동복댐·주암본댐·상사댐)">
   <meta property="og:description" content="동복댐 및 주암댐 실시간 저수율(%), 저수량(㎥), 취수/방류량, 현 수준 물 사용 가능 일수 모니터링 대시보드">
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261030_1">
 </head>
 
 <body>
@@ -54,6 +54,24 @@
         </button>
       </div>
     </header>
+
+    <!-- 가뭄 주의 / 절수 권고 배너 (3개 댐 중 하나라도 물 사용 가능 일수 90일 미만 시 표시) -->
+    <section id="water-saving-banner" class="water-saving-banner" style="display: none;" role="alert" aria-live="assertive">
+      <div class="banner-icon-box" aria-hidden="true">
+        <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="banner-content">
+        <div class="banner-title-row">
+          <h2 class="banner-title">물을 아껴씁시다</h2>
+          <span class="banner-badge" id="banner-warning-badge">가뭄 주의 단계</span>
+        </div>
+        <p class="banner-desc" id="banner-desc">현재 일부 수원지의 물 사용 가능 일수가 90일 아래로 떨어졌습니다. 소중한 물을 함께 아껴 써주세요.</p>
+      </div>
+    </section>
 
     <!-- 대시보드 카드 영역 -->
     <main class="dam-grid">
@@ -279,7 +297,7 @@
     </footer>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20261030_1"></script>
 </body>
 
 </html>
