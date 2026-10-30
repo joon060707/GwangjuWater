@@ -73,25 +73,48 @@ function formatToHourUnit(timestampStr) {
 }
 
 // ==========================================================================
-// 3. 단위 변환 및 수치 표준화 유틸리티 (저수량: ㎥, 취수량: ㎥/s)
+// 3. 단위 변환 및 수치 표준화 유틸리티 (저수량: ㎥, 취수량: ㎥/s, 사용 가능 일수: 일)
 // ==========================================================================
 
 /**
- * 동복댐 저수량 문자열(예: '50,229천㎥')을 기본 ㎥ 수치로 변환
+ * 동복댐 저수량(㎥) 수치 파싱
+ */
+function getDongbokStorageM3(str) {
+  if (!str) return null;
+  const numMatch = String(str).replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+  if (!numMatch) return null;
+
+  let val = parseFloat(numMatch[1]);
+  if (isNaN(val)) return null;
+
+  if (String(str).includes('천')) {
+    val = Math.round(val * 1000);
+  } else if (String(str).includes('백만')) {
+    val = Math.round(val * 1000000);
+  } else {
+    val = Math.round(val);
+  }
+  return val;
+}
+
+/**
+ * 동복댐 저수량 문자열(예: '50,229천㎥', '45백만㎥')을 기본 ㎥ 수치로 변환
  * 50,229천 => 50,229,000 ㎥
  */
 function formatDongbokStorage(str) {
-  if (!str) return '-';
-  const numMatch = String(str).replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
-  if (!numMatch) return str;
+  const m3 = getDongbokStorageM3(str);
+  if (m3 === null) return str || '-';
+  return `${m3.toLocaleString('ko-KR')} ㎥`;
+}
 
-  let val = parseFloat(numMatch[1]);
-  if (str.includes('천')) {
-    val = Math.round(val * 1000);
-  } else if (str.includes('백만')) {
-    val = Math.round(val * 1000000);
-  }
-  return `${val.toLocaleString('ko-KR')} ㎥`;
+/**
+ * 주암댐 저수량(㎥) 수치 파싱 (입력단위: 백만㎥)
+ */
+function getJuamStorageM3(rsqty) {
+  if (rsqty === undefined || rsqty === null || rsqty === '') return null;
+  const val = parseFloat(rsqty);
+  if (isNaN(val)) return null;
+  return Math.round(val * 1000000);
 }
 
 /**
@@ -99,24 +122,22 @@ function formatDongbokStorage(str) {
  * 210.373 백만㎥ => 210,373,000 ㎥
  */
 function formatJuamStorage(rsqty) {
-  if (rsqty === undefined || rsqty === null || rsqty === '') return '-';
-  const val = parseFloat(rsqty);
-  if (isNaN(val)) return '-';
-  const totalM3 = Math.round(val * 1000000);
-  return `${totalM3.toLocaleString('ko-KR')} ㎥`;
+  const m3 = getJuamStorageM3(rsqty);
+  if (m3 === null) return '-';
+  return `${m3.toLocaleString('ko-KR')} ㎥`;
 }
 
 /**
- * 동복댐 취수량 문자열(예: '12천㎥/h', '12천㎥/시간')을 초당 유량(㎥/s)으로 변환
+ * 동복댐 취수량 초당 유량(㎥/s) 파싱
  * 취수량 단위(천㎥/시간)에 1,000을 곱한 뒤 1시간 = 3,600초로 나누어 ㎥/s로 환산
  */
-function formatDongbokIntake(str) {
-  if (!str) return '-';
+function getDongbokIntakeM3PerSec(str) {
+  if (!str) return null;
   const numMatch = String(str).replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
-  if (!numMatch) return str;
+  if (!numMatch) return null;
 
   let rawVal = parseFloat(numMatch[1]);
-  if (isNaN(rawVal)) return '-';
+  if (isNaN(rawVal)) return null;
 
   // 사이트 오류 수정 반영: 기존에는 수치 자체가 12,144였으나 현재는 12천㎥ 단위로 정상 표기되므로 1,000을 곱함
   if (String(str).includes('천')) {
@@ -128,8 +149,26 @@ function formatDongbokIntake(str) {
   }
 
   // 시간당 수치이므로 3,600으로 나누어 초당(㎥/s)으로 변환
-  const perSec = rawVal / 3600;
+  return rawVal / 3600;
+}
+
+/**
+ * 동복댐 취수량 문자열(예: '12천㎥/h', '12천㎥/시간')을 초당 유량(㎥/s)으로 변환
+ */
+function formatDongbokIntake(str) {
+  const perSec = getDongbokIntakeM3PerSec(str);
+  if (perSec === null) return str || '-';
   return `${perSec.toFixed(1)} ㎥/s`;
+}
+
+/**
+ * 주암댐 방류량(㎥/s) 수치 파싱
+ */
+function getJuamDischargeM3PerSec(val) {
+  if (val === undefined || val === null || val === '') return null;
+  const num = parseFloat(val);
+  if (isNaN(num)) return null;
+  return num;
 }
 
 /**
@@ -137,10 +176,39 @@ function formatDongbokIntake(str) {
  * 단위: ㎥/s (방류량 안에 취수량이 포함됨)
  */
 function formatJuamDischarge(val) {
-  if (val === undefined || val === null || val === '') return '-';
-  const num = parseFloat(val);
-  if (isNaN(num)) return '-';
-  return `${num.toFixed(1)} ㎥/s`;
+  const perSec = getJuamDischargeM3PerSec(val);
+  if (perSec === null) return '-';
+  return `${perSec.toFixed(1)} ㎥/s`;
+}
+
+/**
+ * 저수량(㎥)과 초당 유량/취수량(㎥/s)을 바탕으로 현 수준 물 사용 가능한 일수 계산
+ * (1일 물 사용량 = 초당 유량 × 86,400초, 사용 가능 일수 = 총 저수량 ÷ 1일 물 사용량)
+ * @param {number|null} storageM3 - 총 저수량 (㎥)
+ * @param {number|null} flowM3PerSec - 초당 유량 또는 방류/취수량 (㎥/s)
+ * @returns {{ text: string, tooltip: string }}
+ */
+function calculateUsableDays(storageM3, flowM3PerSec) {
+  if (!storageM3 || !flowM3PerSec || storageM3 <= 0 || flowM3PerSec <= 0) {
+    return { text: '-', tooltip: '저수량 또는 취수량(방류량) 데이터가 없어 산출할 수 없습니다.' };
+  }
+
+  // 1일 = 86,400초 (24시간 × 3,600초)
+  const dailyUsageM3 = flowM3PerSec * 86400;
+  if (dailyUsageM3 <= 0) {
+    return { text: '-', tooltip: '취수량(방류량)이 0㎥/s로 산출할 수 없습니다.' };
+  }
+
+  const days = storageM3 / dailyUsageM3;
+  if (!isFinite(days) || days < 0) {
+    return { text: '-', tooltip: '산출할 수 없습니다.' };
+  }
+
+  const roundedDays = Math.round(days);
+  const text = roundedDays < 1 ? '1일 미만' : `${roundedDays.toLocaleString('ko-KR')}일`;
+  const tooltip = `현재 저수량(${storageM3.toLocaleString('ko-KR')} ㎥) ÷ 1일 사용량(${Math.round(dailyUsageM3).toLocaleString('ko-KR')} ㎥/일) = 약 ${days.toFixed(1)}일`;
+
+  return { text, tooltip };
 }
 
 // ==========================================================================
@@ -313,10 +381,20 @@ function renderDongbokDam(data) {
   applyRateColorTheme(rateVal, rateEl, gaugeEl);
 
   // 저수량: ㎥ 단위 통일 (50,229,000 ㎥)
+  const storageM3 = getDongbokStorageM3(data.storage_amount);
   amountEl.textContent = formatDongbokStorage(data.storage_amount);
 
   // 취수량: ㎥/s 단위 통일 (시간당 천㎥ * 1000 / 3600 => 약 3.3 ㎥/s)
+  const intakePerSec = getDongbokIntakeM3PerSec(data.intake_amount);
   intakeEl.textContent = formatDongbokIntake(data.intake_amount);
+
+  // 현 수준으로 물 사용 가능한 일수 (저수량 ÷ 1일 취수량)
+  const usableDaysEl = document.getElementById('dongbok-usable-days');
+  if (usableDaysEl) {
+    const { text, tooltip } = calculateUsableDays(storageM3, intakePerSec);
+    usableDaysEl.textContent = text;
+    usableDaysEl.title = tooltip;
+  }
 
   // 최종 업데이트 시간 (시간 단위 포맷)
   updatedEl.textContent = formatToHourUnit(data.updated_at);
@@ -345,12 +423,22 @@ function renderJuamDam(item) {
   applyRateColorTheme(rateVal, rateEl, gaugeEl);
 
   // 저수량: ㎥ 단위 통일 (백만㎥ * 1,000,000 => 210,373,000 ㎥)
+  const storageM3 = getJuamStorageM3(item.rsqty);
   amountEl.textContent = formatJuamStorage(item.rsqty);
 
   // 방류량 (취수량 포함): ㎥/s 단위 통일
   const dischargeVal = (item.tdqty !== undefined && item.tdqty !== null) ? item.tdqty : item.itqty;
+  const dischargePerSec = getJuamDischargeM3PerSec(dischargeVal);
   if (dischargeEl) {
     dischargeEl.textContent = formatJuamDischarge(dischargeVal);
+  }
+
+  // 현 수준으로 물 사용 가능한 일수 (저수량 ÷ 1일 방류량)
+  const usableDaysEl = document.getElementById('juam-usable-days');
+  if (usableDaysEl) {
+    const { text, tooltip } = calculateUsableDays(storageM3, dischargePerSec);
+    usableDaysEl.textContent = text;
+    usableDaysEl.title = tooltip;
   }
 
   // 최종 업데이트 시간 (시간 단위 포맷)
@@ -380,12 +468,22 @@ function renderJuamSubDam(item) {
   applyRateColorTheme(rateVal, rateEl, gaugeEl);
 
   // 저수량: ㎥ 단위 통일 (백만㎥ * 1,000,000 => 140,100,000 ㎥)
+  const storageM3 = getJuamStorageM3(item.rsqty);
   amountEl.textContent = formatJuamStorage(item.rsqty);
 
   // 방류량 (취수량 포함): ㎥/s 단위 통일
   const dischargeVal = (item.tdqty !== undefined && item.tdqty !== null) ? item.tdqty : item.itqty;
+  const dischargePerSec = getJuamDischargeM3PerSec(dischargeVal);
   if (dischargeEl) {
     dischargeEl.textContent = formatJuamDischarge(dischargeVal);
+  }
+
+  // 현 수준으로 물 사용 가능한 일수 (저수량 ÷ 1일 방류량)
+  const usableDaysEl = document.getElementById('juam-sub-usable-days');
+  if (usableDaysEl) {
+    const { text, tooltip } = calculateUsableDays(storageM3, dischargePerSec);
+    usableDaysEl.textContent = text;
+    usableDaysEl.title = tooltip;
   }
 
   // 최종 업데이트 시간 (시간 단위 포맷)

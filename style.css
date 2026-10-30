@@ -484,6 +484,69 @@ html[data-theme="dark"] .rate-value.rate-level-caution {
   margin-top: 4px;
 }
 
+/* 현 수준으로 물 사용 가능한 일수 하이라이트 행 */
+.usable-days-row {
+  background: rgba(2, 132, 199, 0.06);
+  border: 1px solid rgba(2, 132, 199, 0.16);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 3px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  transition: all var(--transition-speed) ease;
+}
+
+.usable-days-row .meta-label {
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.825rem;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+}
+
+.usable-days-row .highlight-days {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+#card-juam .usable-days-row,
+#card-juam-sub .usable-days-row {
+  background: rgba(15, 118, 110, 0.06);
+  border-color: rgba(15, 118, 110, 0.16);
+}
+
+#card-juam .usable-days-row .highlight-days,
+#card-juam-sub .usable-days-row .highlight-days {
+  color: var(--juam-color);
+}
+
+/* 다크모드 대응 */
+html[data-theme="dark"] .usable-days-row {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.2);
+}
+
+html[data-theme="dark"] .usable-days-row .highlight-days {
+  color: #38bdf8;
+}
+
+html[data-theme="dark"] #card-juam .usable-days-row,
+html[data-theme="dark"] #card-juam-sub .usable-days-row {
+  background: rgba(45, 212, 191, 0.08);
+  border-color: rgba(45, 212, 191, 0.2);
+}
+
+html[data-theme="dark"] #card-juam .usable-days-row .highlight-days,
+html[data-theme="dark"] #card-juam-sub .usable-days-row .highlight-days {
+  color: #2dd4bf;
+}
+
 /* 카드 하단 상태 텍스트 */
 .card-footer {
   font-size: 0.8rem;
